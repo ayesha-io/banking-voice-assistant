@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#17408B">
+<title>AlpenBank AG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    color-scheme: light dark;
+    --paper: #F5F8FC;
+    --surface: #FFFFFF;
+    --ink: #0F1F36;
+    --muted: #4A5D78;
+    --brand: #17408B;
+    --brand-ink: #FFFFFF;
+    --glacier: #DCE8F6;
+    --line: #C7D5E8;
+    --glow: #E8A23A;
+    --glow-soft: #FBEFD9;
+    --ridge-back: #B5CBEA;
+    --ridge-mid: #6F98D1;
+    --pill: #17408B;
+    --call-bg: #0F2A5C;
+    --backdrop: #DDE6F1;
+    --serif: "Newsreader", Georgia, "Times New Roman", serif;
+    --sans: "Instrument Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --tab-h: 84px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #0B1627;
+      --surface: #12233B;
+      --ink: #E6EEF9;
+      --muted: #9FB3CE;
+      --brand: #7FB0F5;
+      --brand-ink: #07162B;
+      --glacier: #10294A;
+      --line: #243B5C;
+      --glow: #F0B455;
+      --glow-soft: #2B2414;
+      --ridge-back: #1C3D6B;
+      --ridge-mid: #2B5A99;
+      --pill: #2F6FDB;
+      --call-bg: #081A38;
+      --backdrop: #050B14;
+    }
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    background: var(--backdrop);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.45;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+  button { font: inherit; color: inherit; cursor: pointer; }
+  :focus-visible { outline: 3px solid var(--brand); outline-offset: 2px; border-radius: 6px; }
+  .ico { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+  /* ---------- Stage and phone frame ---------- */
+  .stage { min-height: 100%; display: grid; place-items: center; padding: 16px; }
+  .scaler { width: calc(412px * var(--s, 1)); height: calc(866px * var(--s, 1)); }
+  .phone {
+    width: 412px; height: 866px;
+    padding: 11px;
+    background: #0d1117;
+    border-radius: 58px;
+    transform: scale(var(--s, 1));
+    transform-origin: 0 0;
+  }
+  .screen {
+    position: relative;
+    width: 100%; height: 100%;
+    overflow: hidden;
+    border-radius: 47px;
+    background: var(--paper);
+    display: flex; flex-direction: column;
+  }
+  .island { position: absolute; top: 11px; left: 50%; transform: translateX(-50%); width: 118px; height: 34px; border-radius: 20px; background: #000; z-index: 30; }
+  .statusbar { height: 50px; flex: none; display: flex; justify-content: space-between; align-items: center; padding: 6px 34px 0 38px; font-weight: 600; font-size: 15px; }
+  .statusbar .ico { width: 18px; height: 18px; stroke-width: 0; fill: currentColor; }
+  .sb-icons { display: flex; gap: 6px; align-items: center; }
+  .homebar { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 136px; height: 5px; border-radius: 3px; background: var(--ink); opacity: .85; z-index: 30; pointer-events: none; }
+
+  /* ---------- App chrome ---------- */
+  .appbar { flex: none; display: flex; justify-content: space-between; align-items: center; padding: 6px 20px 10px; background: var(--paper); }
+  .brand { display: inline-flex; align-items: center; gap: 8px; font-family: var(--serif); font-size: 24px; font-weight: 500; letter-spacing: -.01em; color: var(--brand); }
+  .brand .ico { width: 26px; height: 26px; fill: currentColor; stroke: none; }
+  .brand small { font-family: var(--sans); font-size: 14px; font-weight: 500; color: var(--muted); }
+  .lang { display: inline-flex; padding: 3px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); }
+  .lang button { border: 0; background: transparent; min-width: 40px; padding: 5px 10px; border-radius: 999px; font-size: 13px; font-weight: 600; color: var(--muted); }
+  .lang button[aria-pressed="true"] { background: var(--brand); color: var(--brand-ink); }
+
+  .views { flex: 1; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; }
+  .views::-webkit-scrollbar { display: none; }
+  .sky { background: var(--glacier); line-height: 0; }
+  .sky svg { width: 100%; height: 150px; display: block; }
+  .sky .sun { fill: var(--glow); }
+  .sky .back { fill: var(--ridge-back); }
+  .sky .mid { fill: var(--ridge-mid); }
+  .sky .front { fill: var(--paper); }
+  .pad { padding: 4px 20px calc(var(--tab-h) + 96px); }
+  .pad.plain { padding-top: 24px; }
+
+  h1, h2 { font-family: var(--serif); font-weight: 400; letter-spacing: -.015em; margin: 0; }
+  h1 { font-size: 32px; line-height: 1.08; margin-bottom: 10px; }
+  h2 { font-size: 28px; line-height: 1.1; margin-bottom: 8px; }
+  .lead { margin: 0 0 20px; color: var(--muted); font-size: 16px; }
+
+  .topics { list-style: none; margin: 0; padding: 0; }
+  .topics li { padding: 14px 0; border-top: 1px solid var(--line); }
+  .topics li:last-child { border-bottom: 1px solid var(--line); }
+  .topics h3 { margin: 0; font-family: var(--serif); font-weight: 500; font-size: 20px; }
+  .topics p { margin: 2px 0 0; color: var(--muted); font-size: 15px; }
+  .caution { margin: 18px 0 0; padding: 12px 14px; border-left: 3px solid var(--glow); background: var(--glow-soft); border-radius: 2px; font-size: 14px; color: var(--ink); }
+  .note { margin: 18px 0 0; color: var(--muted); font-size: 15px; }
+  .links { list-style: none; margin: 16px 0 0; padding: 0; }
+  .links li { padding: 14px 0; border-top: 1px solid var(--line); }
+  .links li:last-child { border-bottom: 1px solid var(--line); }
+  .links a { text-decoration: none; font-weight: 500; }
+  .fine { margin: 18px 0 0; font-size: 13px; color: var(--muted); }
+
+
+  .tabbar { flex: none; height: var(--tab-h); display: flex; justify-content: space-around; padding-top: 8px; background: var(--surface); border-top: 1px solid var(--line); }
+  .tabbar button { border: 0; background: transparent; width: 25%; height: 52px; display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 12px; font-weight: 500; color: var(--muted); }
+  .tabbar .ico { width: 22px; height: 22px; }
+  .tabbar button[aria-current="page"] { color: var(--brand); }
+
+  /* ---------- The floating pill ---------- */
+  .pill {
+    position: absolute; z-index: 10;
+    right: 16px; bottom: calc(var(--tab-h) + 16px);
+    height: 54px; padding: 0 22px 0 18px;
+    display: inline-flex; align-items: center; gap: 10px;
+    border: 3px solid var(--paper); border-radius: 30px;
+    background: var(--pill); color: #fff;
+    font-size: 16px; font-weight: 600;
+  }
+  .pill:active { transform: scale(.97); }
+  .pill .ico { width: 22px; height: 22px; }
+
+  /* ---------- Call screen ---------- */
+  .call { position: absolute; inset: 0; z-index: 20; display: flex; flex-direction: column; align-items: center; background: var(--call-bg); color: #fff; padding: 76px 24px 56px; animation: rise .3s ease-out; }
+  .avatar { width: 96px; height: 96px; border-radius: 50%; background: #DCE8F6; color: #17408B; display: grid; place-items: center; font-family: var(--serif); font-size: 46px; font-weight: 500; }
+  .call h2 { color: #fff; margin: 14px 0 0; font-size: 30px; }
+  .call .role { margin: 2px 0 0; font-size: 15px; color: #C9D8EE; }
+  .call .timer { margin: 10px 0 0; font-size: 18px; font-variant-numeric: tabular-nums; }
+  .captions { flex: 1; width: 100%; margin: 16px 0; display: flex; flex-direction: column; justify-content: flex-end; gap: 8px; overflow: hidden; }
+  .captions p { margin: 0; max-width: 85%; padding: 9px 13px; border-radius: 16px; font-size: 15px; line-height: 1.35; }
+  .captions .bot { align-self: flex-start; background: rgba(255,255,255,.14); }
+  .captions .user { align-self: flex-end; background: #DCE8F6; color: #0F2A5C; }
+  .captions .hint { align-self: center; max-width: 100%; background: none; color: #C9D8EE; text-align: center; }
+  .controls { display: flex; gap: 40px; align-items: flex-start; }
+  .controls div { display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 14px; }
+  .round { width: 66px; height: 66px; border-radius: 50%; border: 0; display: grid; place-items: center; color: #fff; background: rgba(255,255,255,.16); }
+  .round[aria-pressed="true"] { background: #fff; color: #0F2A5C; }
+  .round.end { background: #D64545; }
+  .round.end .ico { transform: rotate(135deg); }
+  .round .slash { display: none; }
+  .round[aria-pressed="true"] .slash { display: block; }
+
+  .toast { position: absolute; z-index: 25; left: 16px; right: 16px; bottom: calc(var(--tab-h) + 82px); padding: 12px 14px; border-radius: 12px; background: var(--ink); color: var(--paper); font-size: 14px; animation: rise .25s ease-out; }
+  /* ---------- xApp sheet (opens by itself when the flow sends the URL) ---------- */
+  /*.xsheet { position: absolute; z-index: 28; inset: 50px 0 170px 0; display: flex; flex-direction: column; overflow: hidden; border-radius: 0 0 24px 24px; background: var(--surface); box-shadow: 0 8px 24px rgba(0,0,0,.28); animation: rise .3s ease-out; }*/
+  .xsheet { position: absolute; z-index: 28; inset: 50px 0 160px 0; display: flex; flex-direction: column; overflow: hidden; border-radius: 0 0 24px 24px; background: var(--surface); box-shadow: 0 8px 24px rgba(0,0,0,.28); animation: rise .3s ease-out; }
+  .xsheet-bar { flex: none; padding: 14px 20px; background: var(--call-bg); color: #fff; font-size: 15px; font-weight: 600; }
+  .xsheet iframe { flex: 1; width: 100%; border: 0; background: var(--surface); }
+
+  /* xApp is loaded but kept invisible until the caller taps the button */
+  .xsheet.pending { visibility: hidden; pointer-events: none; }
+  .xbtn { flex: none; align-self: center; height: 54px; margin: 0 0 22px; padding: 0 30px; border: 0; border-radius: 30px; background: #fff; color: #0F2A5C; font-size: 16px; font-weight: 600; }
+  .xbtn:active { transform: scale(.97); }
+
+  .dev { margin: 0 0 14px; padding: 10px 12px; border-radius: 8px; background: var(--glow); color: #11242B; font-size: 13px; }
+
+
+  /* ---------- Minimise the call: button on the call screen + compact bar ---------- */
+  .minbtn { position: absolute; z-index: 2; top: 52px; left: 16px; width: 44px; height: 44px; border: 0; border-radius: 50%; display: grid; place-items: center; background: rgba(255,255,255,.16); color: #fff; }
+  .minbtn:active { transform: scale(.95); }
+  .minibar { position: absolute; z-index: 22; left: 16px; right: 16px; bottom: calc(var(--tab-h) + 16px); display: flex; align-items: center; gap: 8px; padding: 6px; border: 3px solid var(--paper); border-radius: 36px; background: var(--call-bg); color: #fff; animation: rise .25s ease-out; }
+  .minibar-open { flex: 1; min-width: 0; min-height: 48px; display: flex; align-items: center; gap: 12px; padding: 0 6px; border: 0; background: none; color: inherit; font: inherit; text-align: left; }
+  .minibar .avatar-sm { flex: none; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: #DCE8F6; color: #17408B; font-family: var(--serif); font-size: 20px; font-weight: 500; }
+  .minibar-text { display: flex; flex-direction: column; line-height: 1.2; min-width: 0; }
+  .minibar-text b { font-size: 15px; }
+  .minibar-text span { font-size: 13px; color: #C9D8EE; font-variant-numeric: tabular-nums; }
+  .minibar .round { flex: none; width: 48px; height: 48px; }
+  .minibar .round .ico { width: 22px; height: 22px; }
+
+  /* ---------- Test data (Profile tab) ---------- */
+  .test { margin: 22px 0 8px; }
+  .test h3 { margin: 0 0 4px; font-family: var(--serif); font-weight: 500; font-size: 22px; }
+  .test .lead { margin-bottom: 14px; font-size: 15px; }
+  .test .caution { margin: 0 0 14px; border-left-color: var(--brand); background: var(--glacier); }
+  .cust { margin-top: 12px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); overflow: hidden; }
+  .cust.pin { background: var(--glow-soft); border-color: var(--glow); }
+  .cust-head { display: flex; align-items: center; gap: 12px; padding: 12px 14px; }
+  .flag { flex: none; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--glacier); color: var(--brand); font-size: 13px; font-weight: 700; letter-spacing: .02em; }
+  .cust-name { font-family: var(--serif); font-weight: 500; font-size: 18px; }
+  .kv { padding: 10px 14px; border-top: 1px solid var(--line); }
+  .cust.pin .kv { border-top: 0; padding: 12px 14px; }
+  .kv-text { display: flex; flex-direction: column; min-width: 0; }
+  .kv .k { font-size: 12px; color: var(--muted); }
+  .kv .v { font-size: 16px; font-weight: 500; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+  .cust.pin .kv .v { font-size: 20px; letter-spacing: .12em; }
+
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .call, .toast, .xsheet { animation: none; } }
+
+  /* ---------- On a real phone: drop the frame, be the app ---------- */
+  @media (max-width: 520px) {
+    :root { --tab-h: calc(62px + env(safe-area-inset-bottom)); }
+    .stage { padding: 0; display: block; }
+    .scaler { width: 100%; height: 100dvh; }
+    .phone { width: 100%; height: 100%; padding: 0; border-radius: 0; background: none; transform: none; }
+    .screen { border-radius: 0; padding-top: env(safe-area-inset-top); }
+    .island, .statusbar, .homebar { display: none; }
+    /*.xsheet { top: 0; bottom: calc(150px + env(safe-area-inset-bottom)); }*/
+    .xsheet { top: 0; bottom: calc(140px + env(safe-area-inset-bottom)); }
+    .xsheet-bar { padding-top: calc(14px + env(safe-area-inset-top)); }
+    .call { padding-top: calc(48px + env(safe-area-inset-top)); padding-bottom: calc(36px + env(safe-area-inset-bottom)); }
+    .minbtn { top: calc(10px + env(safe-area-inset-top)); }
+  }
+</style>
+</head>
+
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-phone" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></symbol>
+  <symbol id="i-mic" viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></symbol>
+  <symbol id="i-card" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+</svg>
+
+<div class="stage">
+<div class="scaler" id="scaler">
+<div class="phone">
+<div class="screen" id="screen">
+
+  <div class="island"></div>
+  <div class="statusbar" aria-hidden="true">
+    <span id="clock">9:41</span>
+    <span class="sb-icons">
+      <svg class="ico" viewBox="0 0 18 18"><rect x="1" y="11" width="3" height="5" rx="1"/><rect x="6" y="8" width="3" height="8" rx="1"/><rect x="11" y="5" width="3" height="11" rx="1"/><rect x="16" y="2" width="2" height="14" rx="1"/></svg>
+      <svg class="ico" style="width:26px" viewBox="0 0 26 18"><rect x="1" y="3" width="21" height="12" rx="3.5" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="3" y="5" width="16" height="8" rx="2"/><rect x="23" y="7" width="2" height="4" rx="1"/></svg>
+    </span>
+  </div>
+
+  <header class="appbar">
+    <div class="brand">
+      <svg class="ico" viewBox="0 0 28 28" aria-hidden="true"><path d="M2 23 L11 6 L15.5 14 L19 9.5 L26 23 Z"/></svg>
+      AlpenBank <small>AG</small>
+    </div>
+    <div class="lang" role="group" data-i18n-aria="langLabel" aria-label="Language">
+      <button type="button" data-lang="en" aria-pressed="true">EN</button>
+      <button type="button" data-lang="de" aria-pressed="false">DE</button>
+    </div>
+  </header>
+
+  <main class="views" id="views">
+
+    <section data-panel="home">
+      <div class="sky">
+        <svg viewBox="0 0 390 150" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">
+          <circle class="sun" cx="300" cy="44" r="19"/>
+          <path class="back" d="M0 92 L40 62 L72 80 L116 36 L158 70 L196 52 L246 92 L292 48 L336 76 L390 56 L390 150 L0 150Z"/>
+          <path class="mid" d="M0 112 L50 86 L98 106 L150 74 L206 104 L262 82 L318 110 L360 94 L390 108 L390 150 L0 150Z"/>
+          <path class="front" d="M0 136 L62 124 L124 134 L196 120 L268 134 L338 122 L390 130 L390 150 L0 150Z"/>
+        </svg>
+      </div>
+      <div class="pad">
+        <p class="dev" id="dev-note" hidden>Developer note: set WIDGET_ENDPOINT in the script to your Click To Call endpoint URL.</p>
+        <h1 data-i18n="homeTitle">How can we help today?</h1>
+        <p class="lead" data-i18n="homeLead">Talk to Ayesha, our AI virtual assistant, on any of the topics below.</p>
+        <ul class="topics">
+          <li><h3 data-i18n="topic1Title">Account overview</h3><p data-i18n="topic1Text">Ask about your account details, current balance, and past transactions.</p></li>
+          <li><h3 data-i18n="topic2Title">Replacement cards</h3><p data-i18n="topic2Text">Request a replacement for lost, stolen or damaged cards.</p></li>
+          <li><h3 data-i18n="topic3Title">Tax documents</h3><p data-i18n="topic3Text">Request for tax documents by year.</p></li>
+        </ul>
+        <p class="caution" data-i18n="caution">Never say your PIN, TAN or full card number aloud.</p>
+      </div>
+    </section>
+
+    <section data-panel="cards" hidden>
+      <div class="pad plain">
+        <h2 data-i18n="cardsTitle">Accounts and cards</h2>
+        <p class="lead" data-i18n="cardsText">Account details, replacement cards, and tax documents.</p>
+        <p class="caution" data-i18n="lostCard">Lost your card? Call Ayesha at any time.</p>
+      </div>
+    </section>
+
+    <section data-panel="invest" hidden>
+      <div class="pad plain">
+        <h2 data-i18n="investTitle">Savings and investing</h2>
+        <p class="lead" data-i18n="investText">Coming soon.</p>
+      </div>
+    </section>
+
+    <section data-panel="profile" hidden>
+      <div class="pad plain">
+        <h2 data-i18n="tabProfile">Profile</h2>
+        <div class="test">
+          <h3 data-i18n="testTitle">Test data</h3>
+          <p class="lead" data-i18n="testLead">Sample customers for trying out the demo. Use these details when Ayesha asks for them.</p>
+          <p class="caution" data-i18n="testNote">2024 tax documents are available for customers CUST-US-2001 and CUST-AU-4001.</p>
+          <div class="cust pin">
+            <div class="kv"><span class="kv-text"><span class="k" data-i18n="testPin">PIN (same for all customers)</span><span class="v">482 913</span></span></div>
+          </div>
+          <div class="cust">
+            <div class="cust-head"><span class="flag" aria-hidden="true">DE</span><span class="cust-name" data-i18n="country1">Germany</span></div>
+            <div class="kv"><span class="kv-text"><span class="k" data-i18n="custId">Customer ID</span><span class="v">CUST-DE-1001</span></span></div>
+            <div class="kv"><span class="kv-text"><span class="k" data-i18n="phone">Phone</span><span class="v">+49 30 1234567</span></span></div>
+            <div class="kv"><span class="kv-text"><span class="k" data-i18n="acctId">Account ID</span><span class="v">AC-DE-1001</span></span></div>
+          </div>
+          <div class="cust">
+            <div class="cust-head"><span class="flag" aria-hidden="true">US</span><span class="cust-name" data-i18n="country2">United States</span></div>
+            <div class="kv"><span class="kv-text"><span class="k" data-i18n="custId">Customer ID</span><span class="v">CUST-US-2001</span></span></div>
+            <div class="kv"><span class="kv-text"><span class="k" data-i18n="phone">Phone</span><span class="v">+1 415 555 0102</span></span></div>
+            <div class="kv"><span class="kv-text"><span class="k" data-i18n="acctId">Account ID</span><span class="v">AC-US-2001</span></span></div>
+          </div>
+          <div class="cust">
+            <div class="cust-head"><span class="flag" aria-hidden="true">SG</span><span class="cust-name" data-i18n="country3">Singapore</span></div>
+            <div class="kv"><span class="kv-text"><span class="k" data-i18n="custId">Customer ID</span><span class="v">CUST-SG-3001</span></span></div>
+            <div class="kv"><span class="kv-text"><span class="k" data-i18n="phone">Phone</span><span class="v">+65 6555 1234</span></span></div>
+            <div class="kv"><span class="kv-text"><span class="k" data-i18n="acctId">Account ID</span><span class="v">AC-SG-3001</span></span></div>
+          </div>
+          <div class="cust">
+            <div class="cust-head"><span class="flag" aria-hidden="true">AU</span><span class="cust-name" data-i18n="country4">Australia</span></div>
+            <div class="kv"><span class="kv-text"><span class="k" data-i18n="custId">Customer ID</span><span class="v">CUST-AU-4001</span></span></div>
+            <div class="kv"><span class="kv-text"><span class="k" data-i18n="phone">Phone</span><span class="v">+61 411 111 111</span></span></div>
+            <div class="kv"><span class="kv-text"><span class="k" data-i18n="acctId">Account ID</span><span class="v">AC-AU-4001</span></span></div>
+          </div>
+        </div>
+        <ul class="links">
+          <li><a href="#" data-i18n="footImprint">Imprint</a></li>
+          <li><a href="#" data-i18n="footPrivacy">Privacy</a></li>
+          <li><a href="#" data-i18n="footTerms">Terms</a></li>
+        </ul>
+        <p class="fine" data-i18n="footDemo">Demo page. Content is for illustration only.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <nav class="tabbar" data-i18n-aria="tabsLabel" aria-label="App navigation">
+    <button type="button" data-tab="home" aria-current="page"><svg class="ico"><use href="#i-home"/></svg><span data-i18n="tabHome">Home</span></button>
+    <button type="button" data-tab="cards"><svg class="ico"><use href="#i-card"/></svg><span data-i18n="tabCards">Cards</span></button>
+    <button type="button" data-tab="invest"><svg class="ico"><use href="#i-chart"/></svg><span data-i18n="tabInvest">Invest</span></button>
+    <button type="button" data-tab="profile"><svg class="ico"><use href="#i-user"/></svg><span data-i18n="tabProfile">Profile</span></button>
+  </nav>
+
+  <button class="pill" id="pill" type="button">
+    <svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg>
+    <span id="pill-label">Talk to Ayesha</span>
+  </button>
+
+  <div class="call" id="call" role="dialog" aria-modal="true" aria-labelledby="call-name" hidden>
+    <button class="minbtn" id="minbtn" type="button" data-i18n-aria="minimise" aria-label="Minimise">
+      <svg class="ico" aria-hidden="true"><use href="#i-down"/></svg>
+    </button>
+    <div class="avatar" aria-hidden="true">A</div>
+    <h2 id="call-name">Ayesha</h2>
+    <p class="role" data-i18n="callRole">Virtual assistant</p>
+    <p class="timer" id="call-status" aria-live="polite">Connecting…</p>
+    <div class="captions" id="captions" role="log" aria-live="polite"></div>
+    <button class="xbtn" id="xbtn" type="button" data-i18n="viewPdf" hidden>View PDF</button>
+    <div class="controls">
+      <div>
+        <button class="round" id="mute" type="button" aria-pressed="false">
+          <svg class="ico" aria-hidden="true"><use href="#i-mic"/><line class="slash" x1="1" y1="1" x2="23" y2="23"/></svg>
+        </button>
+        <span id="mute-label">Mute</span>
+      </div>
+      <div>
+        <button class="round end" id="end" type="button" data-i18n-aria="endCall" aria-label="End call">
+          <svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg>
+        </button>
+        <span data-i18n="endCall">End call</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="minibar" id="minibar" role="group" data-i18n-aria="callBar" aria-label="Call in progress" hidden>
+    <button class="minibar-open" id="minibar-open" type="button" data-i18n-aria="expandCall" aria-label="Back to call">
+      <span class="avatar-sm" aria-hidden="true">A</span>
+      <span class="minibar-text"><b>Ayesha</b><span id="minibar-time">Connecting…</span></span>
+    </button>
+    <button class="round" id="minibar-mute" type="button" aria-pressed="false" aria-label="Mute">
+      <svg class="ico" aria-hidden="true"><use href="#i-mic"/><line class="slash" x1="1" y1="1" x2="23" y2="23"/></svg>
+    </button>
+    <button class="round end" id="minibar-end" type="button" data-i18n-aria="endCall" aria-label="End call">
+      <svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg>
+    </button>
+  </div>
+
+  <div class="xsheet" id="xsheet" role="dialog" aria-modal="true" aria-labelledby="xsheet-title" hidden>
+    <div class="xsheet-bar">
+      <span id="xsheet-title" data-i18n="xappSheetTitle">Secure entry</span>
+    </div>
+    <iframe id="xsheet-frame" aria-labelledby="xsheet-title"></iframe>
+  </div>
+
+  <div class="toast" id="toast" role="alert" hidden></div>
+  <div class="homebar"></div>
+
+</div>
+</div>
+</div>
+</div>
+
+<script>
+(() => {
+  // ---------------------------------------------------------------
+  // Configuration
+  // ---------------------------------------------------------------
+  // Voice Gateway endpoint: wss:// replaced by https://, without /voiceGateway.
+  const WIDGET_ENDPOINT = "https://endpoint-trial.cognigy.ai/9b72d72a1ebe827b01bbbac5134bc675be28d25997e7b953f0acfb91ac039861";
+
+  // Only xApp links on these hosts (and their subdomains) are accepted.
+  const XAPP_ALLOWED_HOSTS = ["cognigy.ai"];
+
+  const SDK_URL = "https://esm.sh/@cognigy/click-to-call-sdk";
+  const WIDGET_BUNDLE = "https://github.com/Cognigy/click-to-call-widget/releases/latest/download/webRTCWidget.js";
+
+  // ---------------------------------------------------------------
+  // Text
+  // ---------------------------------------------------------------
+  const I18N = {
+    en: {
+      title: "AlpenBank AG",
+      langLabel: "Language", tabsLabel: "App navigation",
+      tabHome: "Home", tabCards: "Cards", tabInvest: "Invest", tabProfile: "Profile",
+      homeTitle: "How can we help today?",
+      homeLead: "Talk to Ayesha, our AI virtual assistant, on any of the topics below.",
+      topic1Title: "Account overview", topic1Text: "Ask about your account details, current balance, and past transactions.",
+      topic2Title: "Replacement cards", topic2Text: "Request a replacement for lost, stolen or damaged cards.",
+      topic3Title: "Tax documents", topic3Text: "Request for tax documents by year.",
+      cardsTitle: "Accounts and cards",
+      cardsText: "Account details, replacement cards, and tax documents.",
+      investTitle: "Savings and investing",
+      investText: "Coming soon.",
+      caution: "Never say your PIN, TAN or full card number aloud.",
+      lostCard: "Lost your card? Call Ayesha at any time.",
+      assistantHint: "Ask Ayesha for the details.",
+      footImprint: "Imprint", footPrivacy: "Privacy", footTerms: "Terms",
+      footDemo: "Demo page. Content is for illustration only.",
+      pillIdle: "Talk to Ayesha", pillConnecting: "Connecting…",
+      callRole: "Virtual assistant", connecting: "Connecting…",
+      hint: "Say hello to get started.",
+      mute: "Mute", unmute: "Unmute", endCall: "End call",
+      callEnded: "Call ended",
+      callFailed: "Couldn't start the call. Check microphone access and try again.",
+      unsupported: "This browser can't make voice calls. Try Safari, Chrome or Edge.",
+      testTitle: "Test data", testNote: "2024 tax documents are available for customers CUST-US-2001 and CUST-AU-4001.", testLead: "Sample customers for trying out the demo. Use these details when Ayesha asks for them.",
+      testPin: "PIN (same for all customers)", custId: "Customer ID", phone: "Phone", acctId: "Account ID",
+      country1: "Germany", country2: "United States", country3: "Singapore", country4: "Australia",
+      minimise: "Minimise", expandCall: "Back to call", callBar: "Call in progress",
+      xappSheetTitle: "Secure entry",
+      viewPdf: "View PDF"
+    },
+    de: {
+      title: "AlpenBank AG",
+      langLabel: "Sprache", tabsLabel: "App-Navigation",
+      tabHome: "Start", tabCards: "Karten", tabInvest: "Anlegen", tabProfile: "Profil",
+      homeTitle: "Wie können wir helfen?",
+      homeLead: "Sprechen Sie mit Ayesha, unserem virtuellen KI-Assistenten, zu jedem der folgenden Themen.",
+      topic1Title: "Kontoübersicht", topic1Text: "Fragen Sie nach Ihren Kontodaten, Ihrem aktuellen Kontostand und vergangenen Transaktionen.",
+      topic2Title: "Ersatzkarten", topic2Text: "Beantragen Sie Ersatz für verlorene, gestohlene oder beschädigte Karten.",
+      topic3Title: "Steuerdokumente", topic3Text: "Steuerdokumente nach Jahr anfordern.",
+      cardsTitle: "Konten und Karten",
+      cardsText: "Kontodetails, Ersatzkarten und Steuerdokumente.",
+      investTitle: "Sparen und Geldanlage",
+      investText: "Demnächst verfügbar.",
+      caution: "Nennen Sie niemals Ihre PIN, TAN oder die vollständige Kartennummer.",
+      lostCard: "Karte verloren? Rufen Sie jederzeit Ayesha an.",
+      assistantHint: "Fragen Sie Ayesha nach den Details.",
+      footImprint: "Impressum", footPrivacy: "Datenschutz", footTerms: "AGB",
+      footDemo: "Demoseite. Die Inhalte dienen nur der Veranschaulichung.",
+      pillIdle: "Mit Ayesha sprechen", pillConnecting: "Verbinde…",
+      callRole: "Virtueller Assistent", connecting: "Verbindung wird aufgebaut…",
+      hint: "Sagen Sie einfach Hallo.",
+      mute: "Stumm", unmute: "Stumm aus", endCall: "Auflegen",
+      callEnded: "Anruf beendet",
+      callFailed: "Der Anruf konnte nicht gestartet werden. Prüfen Sie den Mikrofonzugriff und versuchen Sie es erneut.",
+      unsupported: "Dieser Browser unterstützt keine Sprachanrufe. Versuchen Sie Safari, Chrome oder Edge.",
+      testTitle: "Testdaten", testNote: "Steuerdokumente für 2024 sind für die Kunden CUST-US-2001 und CUST-AU-4001 verfügbar.", testLead: "Beispielkunden zum Ausprobieren der Demo. Nennen Sie diese Angaben, wenn Ayesha danach fragt.",
+      testPin: "PIN (für alle Kunden gleich)", custId: "Kundennummer", phone: "Telefon", acctId: "Konto-ID",
+      country1: "Deutschland", country2: "USA", country3: "Singapur", country4: "Australien",
+      minimise: "Minimieren", expandCall: "Zurück zum Anruf", callBar: "Anruf läuft",
+      xappSheetTitle: "Sichere Eingabe",
+      viewPdf: "PDF ansehen"
+    }
+  };
+
+  const WIDGET_LABELS = {
+    en: { callButton: "Talk to Ayesha", endButton: "End the call", listenLabel: "Listening" },
+    de: { callButton: "Mit Ayesha sprechen", endButton: "Anruf beenden", listenLabel: "Ich höre zu" }
+  };
+
+  // ---------------------------------------------------------------
+  // Elements and state
+  // ---------------------------------------------------------------
+  const $ = (id) => document.getElementById(id);
+  const pill = $("pill"), pillLabel = $("pill-label");
+  const callEl = $("call"), statusEl = $("call-status"), captionsEl = $("captions");
+  const muteBtn = $("mute"), muteLabel = $("mute-label"), endBtn = $("end");
+  const toastEl = $("toast");
+  const xsheet = $("xsheet"), xframe = $("xsheet-frame"), xbtn = $("xbtn");
+  const minBtn = $("minbtn"), minibar = $("minibar"), minOpen = $("minibar-open"), minMute = $("minibar-mute"), minEnd = $("minibar-end"), minTime = $("minibar-time");
+  let minimised = false;
+
+  const params = new URLSearchParams(window.location.search);
+  let lang = ["en", "de"].includes(params.get("lang")) ? params.get("lang") : "en";
+  let state = "idle";            // idle | connecting | live
+  let client = null;
+  let muted = false;
+  let startedAt = 0, timerId = null, toastId = null;
+  let captions = [];
+
+  const t = (k) => I18N[lang][k];
+
+  // ---------------------------------------------------------------
+  // Language, tabs, clock, scaling
+  // ---------------------------------------------------------------
+  function render() {
+    const d = I18N[lang];
+    document.documentElement.lang = lang;
+    document.title = d.title;
+    document.querySelectorAll("[data-i18n]").forEach((el) => { el.textContent = d[el.dataset.i18n]; });
+    document.querySelectorAll("[data-i18n-aria]").forEach((el) => { el.setAttribute("aria-label", d[el.dataset.i18nAria]); });
+    document.querySelectorAll(".lang button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.lang === lang)));
+    pillLabel.textContent = state === "connecting" ? d.pillConnecting : d.pillIdle;
+    muteLabel.textContent = muted ? d.unmute : d.mute;
+    if (state === "connecting") setStatus(d.connecting);
+    minMute.setAttribute("aria-label", muted ? d.unmute : d.mute);
+    renderCaptions();
+    tickClock();
+  }
+
+  document.querySelectorAll(".lang button").forEach((b) => b.addEventListener("click", () => {
+    if (b.dataset.lang === lang) return;
+    lang = b.dataset.lang;
+    try {
+      const url = new URL(window.location.href);
+      url.searchParams.set("lang", lang);
+      window.history.replaceState(null, "", url);
+    } catch (e) { /* not critical */ }
+    render();
+  }));
+
+  const panels = document.querySelectorAll("[data-panel]");
+  const tabs = document.querySelectorAll("[data-tab]");
+  tabs.forEach((b) => b.addEventListener("click", () => {
+    panels.forEach((p) => { p.hidden = p.dataset.panel !== b.dataset.tab; });
+    tabs.forEach((x) => x.setAttribute("aria-current", x === b ? "page" : "false"));
+    $("views").scrollTop = 0;
+  }));
+
+  function tickClock() {
+    const fmt = new Intl.DateTimeFormat(lang === "de" ? "de-DE" : "en-GB", { hour: "2-digit", minute: "2-digit" });
+    $("clock").textContent = fmt.format(new Date());
+  }
+  setInterval(tickClock, 30000);
+
+  const FRAME_W = 412, FRAME_H = 866;
+  function fit() {
+    const mobile = window.matchMedia("(max-width: 520px)").matches;
+    const s = mobile ? 1 : Math.min(1, (window.innerHeight - 32) / FRAME_H, (window.innerWidth - 32) / FRAME_W);
+    document.documentElement.style.setProperty("--s", String(s));
+  }
+  window.addEventListener("resize", fit);
+  fit();
+
+  // ---------------------------------------------------------------
+  // Small helpers
+  // ---------------------------------------------------------------
+  function toast(msg) {
+    toastEl.textContent = msg;
+    toastEl.hidden = false;
+    clearTimeout(toastId);
+    toastId = setTimeout(() => { toastEl.hidden = true; }, 6000);
+  }
+
+  function renderCaptions() {
+    captionsEl.textContent = "";
+    if (!captions.length) {
+      const p = document.createElement("p");
+      p.className = "hint";
+      p.textContent = t("hint");
+      captionsEl.appendChild(p);
+      return;
+    }
+    captions.forEach((c) => {
+      const p = document.createElement("p");
+      p.className = c.who;
+      p.textContent = c.text;
+      captionsEl.appendChild(p);
+    });
+  }
+
+  function setMuted(value) {
+    muted = value;
+    muteBtn.setAttribute("aria-pressed", String(muted));
+    muteLabel.textContent = muted ? t("unmute") : t("mute");
+    minMute.setAttribute("aria-pressed", String(muted));
+    minMute.setAttribute("aria-label", muted ? t("unmute") : t("mute"));
+  }
+
+  function startTimer() {
+    startedAt = Date.now();
+    const update = () => {
+      const s = Math.floor((Date.now() - startedAt) / 1000);
+      setStatus(String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0"));
+    };
+    update();
+    timerId = setInterval(update, 1000);
+  }
+  function stopTimer() { clearInterval(timerId); timerId = null; }
+
+
+  function setStatus(text) { statusEl.textContent = text; minTime.textContent = text; }
+
+  // Minimise: the call keeps running, the call screen gives way to a compact bar so the caller can browse the app.
+  function xsheetVisible() { return !xsheet.hidden && !xsheet.classList.contains("pending"); }
+  function syncMinBtn() { minBtn.hidden = xsheetVisible(); }   // no minimising while the secure form is open
+  function minimiseCall() {
+    if (state === "idle" || minimised || xsheetVisible()) return;
+    minimised = true;
+    callEl.hidden = true;
+    minibar.hidden = false;
+    minOpen.focus({ preventScroll: true });
+  }
+  function restoreCall() {
+    if (!minimised) return;
+    minimised = false;
+    minibar.hidden = true;
+    if (state !== "idle") { callEl.hidden = false; endBtn.focus({ preventScroll: true }); }
+  }
+  minBtn.addEventListener("click", minimiseCall);
+  minOpen.addEventListener("click", restoreCall);
+  minMute.addEventListener("click", () => muteBtn.click());
+  minEnd.addEventListener("click", () => endBtn.click());
+
+  // ---------------------------------------------------------------
+  // xApp hand-over
+  // ---------------------------------------------------------------
+  function isAllowed(url) {
+    return url.protocol === "https:" &&
+      XAPP_ALLOWED_HOSTS.some((h) => url.hostname === h || url.hostname.endsWith("." + h));
+  }
+  // Add ?debug=1 to the page URL to see what the page receives from the flow as an on-screen message.
+  const DEBUG = params.get("debug") === "1";
+  function debug(msg) { console.log("[xApp]", msg); if (DEBUG) toast(msg); }
+
+  function showXapp(raw, viaButton) {
+    let url;
+    try { url = new URL(raw); } catch (e) { console.warn("Invalid xApp URL:", raw); debug("xApp URL is not valid: " + raw); return; }
+    if (!isAllowed(url)) { console.warn("xApp URL blocked (host not allowed):", url.hostname); debug("xApp URL blocked, host not allowed: " + url.hostname); return; }
+    if (viaButton) {
+      debug("xApp staged on " + url.hostname + ", waiting for the caller to tap the button");
+      stageXapp(url.toString());          // loads invisibly, opens only when the button is tapped
+    } else {
+      debug("Opening xApp on " + url.hostname);
+      openXappSheet(url.toString());      // pops up by itself, no click needed
+    }
+  }
+
+  // The xApp opens inside the page (a new tab opened without a click would be blocked by the browser).
+  let xappUrl = "", xappReturnFocus = null;
+  function stageXapp(href) {
+    restoreCall();
+    if (xappUrl !== href) { xframe.src = href; xappUrl = href; }
+    xsheet.classList.add("pending");
+    xsheet.setAttribute("aria-hidden", "true");
+    xsheet.hidden = false;
+    xbtn.hidden = false;
+    syncMinBtn();
+  }
+  function revealXapp() {
+    xappReturnFocus = xbtn;
+    xbtn.hidden = true;
+    xsheet.classList.remove("pending");
+    xsheet.removeAttribute("aria-hidden");
+    syncMinBtn();
+    xframe.focus({ preventScroll: true });
+  }
+  function openXappSheet(href) {
+    restoreCall();
+    if (xappUrl !== href) { xframe.src = href; xappUrl = href; }
+    if (xsheet.hidden) xappReturnFocus = document.activeElement;
+    xsheet.classList.remove("pending");
+    xsheet.removeAttribute("aria-hidden");
+    xbtn.hidden = true;
+    xsheet.hidden = false;
+    syncMinBtn();
+    xframe.focus({ preventScroll: true });
+  }
+  function closeXappSheet() {
+    xsheet.hidden = true;
+    xsheet.classList.remove("pending");
+    xsheet.removeAttribute("aria-hidden");
+    xbtn.hidden = true;
+    xframe.src = "about:blank";
+    xappUrl = "";
+    syncMinBtn();
+    if (xappReturnFocus && xappReturnFocus.focus && !xappReturnFocus.hidden) xappReturnFocus.focus({ preventScroll: true });
+  }
+  // Flow is done (or the call ended): remove the sheet.
+  function hideXapp() { closeXappSheet(); }
+  // No close button on purpose: the flow is waiting for the xApp, so the xApp ends only through its own
+  // buttons (confirm / cancel), the flow's {"closeXapp": true}, or when the call ends.
+  xbtn.addEventListener("click", revealXapp);
+
+  // The xApp page tells this page when the caller is finished (Done or timeout), so the sheet closes
+  // even when the flow does not wait for xApp input.
+  window.addEventListener("message", (ev) => {
+    if (!ev.data || ev.data.type !== "alpen-xapp-done") return;
+    console.log("[xApp] done message from origin:", ev.origin, ev.data);
+    // A sandboxed xApp frame reports its origin as "null"; the message can only close the sheet, so accept it too.
+    let ok = ev.origin === "null";
+    if (!ok) {
+      try {
+        const host = new URL(ev.origin).hostname;
+        ok = XAPP_ALLOWED_HOSTS.some((h) => host === h || host.endsWith("." + h));
+      } catch (e) { ok = false; }
+    }
+    if (!ok) { debug("xApp done message blocked, origin: " + ev.origin); return; }
+    debug("xApp finished: " + ev.data.action);
+    hideXapp();
+  });
+  window.alpenShowXapp = showXapp;   // test from the console: alpenShowXapp("https://app-trial.cognigy.ai/...")
+
+  function findKey(p, key) {
+    if (!p || typeof p !== "object") return null;
+    return p[key] || (p.data && p.data[key]) || (p.data && p.data.data && p.data.data[key]) || null;
+  }
+  function findXappUrl(p) { return findKey(p, "xappUrl"); }
+
+  // ---------------------------------------------------------------
+  // Call handling (Cognigy Click To Call SDK)
+  // ---------------------------------------------------------------
+  let sdkPromise = null;
+  function loadSdk() {
+    if (!sdkPromise) sdkPromise = import(SDK_URL);
+    return sdkPromise;
+  }
+
+  function useStockWidget() {
+    // Fallback if the SDK can't be loaded: the original Cognigy widget.
+    pill.hidden = true;
+    const s = document.createElement("script");
+    s.src = WIDGET_BUNDLE;
+    s.onload = () => {
+      if (typeof window.initWebRTCWidget === "function") {
+        window.initWebRTCWidget(WIDGET_ENDPOINT, { ui: { labels: WIDGET_LABELS[lang] } });
+      }
+    };
+    document.body.appendChild(s);
+  }
+
+  async function createClient() {
+    const sdk = await loadSdk();
+    const support = sdk.checkWebRTCSupport();
+    if (!support.supported) { const e = new Error("unsupported"); e.code = "unsupported"; throw e; }
+
+    const userId = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now());
+    const c = await sdk.createWebRTCClient({ endpointUrl: WIDGET_ENDPOINT, userId });
+
+    c.on("answered", () => {
+      if (state === "idle") return;
+      state = "live";
+      debug("Call answered, waiting for the flow to send xappUrl");
+      startTimer();
+      //Promise.resolve(c.sendInfo("", { language: lang })).catch((e) => console.warn("sendInfo failed:", e));
+    });
+    c.on("ended", () => finishCall(false));
+    c.on("failed", () => finishCall(true));
+    c.on("error", (e) => console.warn("Click To Call error:", e && e.message ? e.message : e));
+    c.on("muted", () => setMuted(true));
+    c.on("unmuted", () => setMuted(false));
+
+    c.on("transcription", (tr) => {
+      if (!tr || !Array.isArray(tr.messages)) return;
+      const who = tr.originator === "user" ? "user" : "bot";
+      tr.messages.forEach((m) => { if (m && m.text) captions.push({ who, text: m.text }); });
+      captions = captions.slice(-5);
+      renderCaptions();
+    });
+
+    c.on("infoReceived", (data) => {
+      let payload = data && data.info && data.info.body;
+      if (typeof payload === "string") { try { payload = JSON.parse(payload); } catch (e) { return; } }
+      console.log("Received from flow:", payload);
+      const url = findXappUrl(payload);
+      if (!url && !findKey(payload, "closeXapp")) debug("INFO received but no xappUrl in it: " + JSON.stringify(payload).slice(0, 140));
+      if (url) showXapp(url, findKey(payload, "xappMode") === "button");
+      if (findKey(payload, "closeXapp")) hideXapp();   // Say node Data: {"closeXapp": true}
+    });
+
+    return c;
+  }
+
+  function openCallScreen() {
+    callEl.hidden = false;
+    pill.hidden = true;
+    captions = [];
+    setMuted(false);
+    renderCaptions();
+    setStatus(t("connecting"));
+    minimised = false;
+    minibar.hidden = true;
+    syncMinBtn();
+    endBtn.focus({ preventScroll: true });
+  }
+
+  function finishCall(failed) {
+    if (state === "idle") return;
+    state = "idle";
+    stopTimer();
+    hideXapp();
+    minimised = false;
+    minibar.hidden = true;
+    callEl.hidden = true;
+    pill.hidden = false;
+    render();
+    toast(failed ? t("callFailed") : t("callEnded"));
+    const old = client;
+    client = null;
+    if (old) setTimeout(() => { Promise.resolve(old.destroy()).catch(() => {}); }, 0);
+    pill.focus({ preventScroll: true });
+  }
+
+  async function startCall() {
+    if (state !== "idle") return;
+    state = "connecting";
+    render();
+    openCallScreen();
+    try {
+      client = await createClient();
+      await client.connectAndCall();
+    } catch (err) {
+      console.warn("Call could not start:", err);
+      const wasUnsupported = err && err.code === "unsupported";
+      state = "connecting";            // let finishCall run its cleanup
+      finishCall(true);
+      if (wasUnsupported) toast(t("unsupported"));
+    }
+  }
+
+  pill.addEventListener("click", startCall);
+
+  endBtn.addEventListener("click", async () => {
+    try { if (client) await client.endCall(); } catch (e) { console.warn(e); }
+    finishCall(false);
+  });
+
+  muteBtn.addEventListener("click", async () => {
+    if (!client || state !== "live") return;
+    try {
+      if (muted) { await client.unmute(); setMuted(false); }
+      else { await client.mute(); setMuted(true); }
+    } catch (e) { console.warn("Mute failed:", e); }
+  });
+
+  window.addEventListener("beforeunload", () => {
+    if (client) { try { Promise.resolve(client.destroy()).catch(() => {}); } catch (e) { /* ignore */ } }
+  });
+
+  // ---------------------------------------------------------------
+  // Start-up
+  // ---------------------------------------------------------------
+  render();
+  if (WIDGET_ENDPOINT.indexOf("PASTE_") === 0) {
+    $("dev-note").hidden = false;
+    pill.disabled = true;
+  } else {
+    // Load the SDK in the background so the first tap is quick; fall back if it can't load.
+    loadSdk().catch((err) => {
+      console.warn("Click To Call SDK could not be loaded, using the stock widget instead:", err);
+      useStockWidget();
+    });
+  }
+})();
+</script>
+</body>
+</html>
